@@ -61,7 +61,7 @@ export default function App() {
         style={styles.restaurantImage}
         source={require('./assets/resim5.jpg')} //  
       />
-       
+        <Text style={styles.footerText}>© 2024 Restoran Uygulaması</Text>
     </View>
     </ScrollView>
   );
