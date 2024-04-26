@@ -1,115 +1,85 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,Image ,ScrollView} from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
-export default function App() {
+import CategoriesScreen from './src/screens/CategoriesScreen';
+import MealsScreen from './src/screens/MealsScreen';
+import MealDetailScreen from './src/screens/MealDetailScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import MessageScreen from './src/screens/MessageScreen';
+import ReservationScreen from './src/screens/ReservationScreen';
+import ReservationListScreen from './src/screens/ReservationListScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
+import { UserProvider } from './src/api/contextApi';
+import CompanyInfoScreen from './src/screens/CompanyInfoScreen';
+
+const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+
+function DrawerNavigator() {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-     
-    <View style={styles.content}>
-    <Image
-          style={styles.searchIcon}
-          source={require('./assets/arama.png')} // Arama simgesinin uygun bir resim dosyasının yolunu girin
-        />
-        {/* Arama çubuğu metni (opsiyonel) */}
-        <Text style={styles.searchText}>Ara</Text>
-      <Image
-        style={styles.restaurantImage}
-        source={require('./assets/resim.jpg')} // İlk restoran için uygun bir resim dosyasının yolunu girin
-        
+    <Drawer.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: '#9e2a2b' },
+        headerTintColor: '#fff',
+        contentStyle: { backgroundColor: '#edf2fb' }
+      }}>
+      <Drawer.Screen name="Kategoriler" component={CategoriesScreen} />
+      <Drawer.Screen name="Mesaj Gönder" component={MessageScreen} />
+      <Drawer.Screen name="Rezervasyon Oluştur" component={ReservationScreen} />
+      <Drawer.Screen name="Rezervasyonlarım" component={ReservationListScreen} />
+      <Drawer.Screen name="Şirket Bilgisi" component={CompanyInfoScreen} />
+      <Drawer.Screen
+        name="Çıkış Yap"
+        component={Logout} // Çıkış yap seçeneğine tıklandığında Logout componenti aktif olacak
+        options={{ headerShown: false, drawerLabel: 'Çıkış Yap' }} // Header gözükmez, sadece "Çıkış Yap" yazsın
       />
-       <Text style={styles.title}>Favori Restoranlar</Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="1. restorant"
-        onChangeText={(text) => setSearchText(text)}
-        value={searchText}
-      />
-      <Image
-        style={styles.restaurantImage}
-        source={require('./assets/resim2.jpg')} // İkinci restoran için uygun bir resim dosyasının yolunu girin
-      />
-       <Text style={styles.title}>Favori Restoranlar</Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="2. restorant"
-        onChangeText={(text) => setSearchText(text)}
-        value={searchText}
-      />
-      <Image
-        style={styles.restaurantImage}
-        source={require('./assets/resim3.jpg')} //  
-      />
-       <Text style={styles.title}>Favori Restoranlar</Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="3. restorant"
-        onChangeText={(text) => setSearchText(text)}
-        value={searchText}
-      />
-      <Image
-        style={styles.restaurantImage}
-        source={require('./assets/resim4.jpg')} //  
-      />
-       <Text style={styles.title}>Favori Restoranlar</Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="4. restorant"
-        onChangeText={(text) => setSearchText(text)}
-        value={searchText}
-      />
-       <Image
-        style={styles.restaurantImage}
-        source={require('./assets/resim5.jpg')} //  
-      />
-        <Text style={styles.footerText}>© 2024 Restoran Uygulaması</Text>
-    </View>
-    </ScrollView>
+    </Drawer.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    
-    backgroundColor:'#fff9c4',
-  },
-  logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
-  },
-  content: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 20, // İçerik alt kısmında 20 birim boşluk bırakır
-  },
-  restaurantImage: {
-    width: 150,
-    height: 150,
-    marginVertical: 10, // Yatay olarak sıralanmış resimler arasında dikey boşluk ekleyin
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0', // Arama çubuğunun arka plan rengi
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  searchIcon: {
-    width: 150,
-    height: 40,
-    marginRight: 10,
-  },
-  searchText: {
-    fontSize: 16,
-    color: '#888', // Arama çubuğu metni rengi
-  },
-  searchInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-});
+// Çıkış yap seçeneğine tıklandığında Stack Navigator'ın en üstündeki ekranın aktif olmasını sağlayan Logout componenti
+const Logout = ({ navigation }) => {
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Çıkış yapıldığında Drawer Navigator'a geri dönüş yaparak Kategoriler ekranına yönlendirilir.
+      navigation.navigate('Kategoriler');
+      // Stack Navigator'daki tüm ekranlar pop edilir, yani ana ekrana dönülür.
+      navigation.popToTop();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  return null;
+};
+
+export default function App() {
+  return (
+    <UserProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: { backgroundColor: '#9e2a2b' },
+            headerTintColor: '#fff',
+            contentStyle: { backgroundColor: '#edf2fb' }
+          }}>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerTitle: 'Giriş' }}
+          />
+          <Stack.Screen
+            name="Drawer"
+            component={DrawerNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Register" options={{ headerTitle: 'Kayıt Ol' }} component={RegisterScreen} />
+          <Stack.Screen name="Yemekler" component={MealsScreen} />
+          <Stack.Screen name="Yemek Detay" component={MealDetailScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserProvider>
+  );
+}
