@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BASE_URL = 'https://5400-5-47-174-149.ngrok-free.app/';
+export const BASE_URL = 'base url girişi yapılır';
 
 
 export const getCategories = async () => {
